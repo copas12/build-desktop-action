@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-prod:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     env:
       APP_ENV: prod
       TAG: LDP
@@ -19,15 +19,15 @@ jobs:
         with:
           node-version: '12.22.1'
 
-      - name: Setup GitLab SSH
-        uses: MrSquaare/ssh-setup-action@v1
-        with:
-          host: gitlab.com
-          private-key: ${{ secrets.SSH_PRIVATE_KEY_GITLAB }}
-          private-key-name: gitlab
+      # - name: Setup GitLab SSH
+      #   uses: MrSquaare/ssh-setup-action@v1
+      #   with:
+      #     host: gitlab.com
+      #     private-key: ${{ secrets.SSH_PRIVATE_KEY_GITLAB }}
+      #     private-key-name: gitlab
 
       - name: Install Yalc
-        run: sudo npm i -g yalc electron-builder@22.2.0
+        run: npm i -g yalc electron-builder@22.2.0
 
       # - name: Install Wine Macos
       #   run: >
@@ -35,23 +35,23 @@ jobs:
       #     brew tap homebrew/cask-versions &&
       #     brew install --cask --no-quarantine wine-staging
 
-      - name: Install Wine Ubuntu
-        run: >
-          sudo dpkg --add-architecture i386 &&
-          wget -qO - https://dl.winehq.org/wine-builds/winehq.key | sudo apt-key add - &&
-          sudo add-apt-repository ppa:cybermax-dexter/sdl2-backport &&
-          sudo apt-add-repository "deb https://dl.winehq.org/wine-builds/ubuntu $(lsb_release -cs) main" &&
-          sudo apt install --install-recommends winehq-stable
+      # - name: Install Wine Ubuntu
+      #   run: >
+      #     sudo dpkg --add-architecture i386 &&
+      #     wget -qO - https://dl.winehq.org/wine-builds/winehq.key | sudo apt-key add - &&
+      #     sudo add-apt-repository ppa:cybermax-dexter/sdl2-backport &&
+      #     sudo apt-add-repository "deb https://dl.winehq.org/wine-builds/ubuntu $(lsb_release -cs) main" &&
+      #     sudo apt install --install-recommends winehq-stable
 
       - name: Clone and Build Middle Backend
         run: >
-          git clone --single-branch --branch ${{ secrets.MIDDLE_BACKEND_BRANCH }} git@gitlab.com:piri/luna-middle-backend-api.git && 
+          git clone --single-branch --branch ${{ secrets.MIDDLE_BACKEND_BRANCH }} https://${{secrets.GITLAB_USER}}:${{secrets.GITLAB_PASS}}@gitlab.com/piri/luna-middle-backend-api.git && 
           cd luna-middle-backend-api && yarn && yarn build-electron-${{env.APP_ENV}} &&
           cd build && yalc publish --private
 
       - name: Clone Luna Desktop
         run: >
-          git clone --single-branch --branch ${{ secrets.LUNA_DESKTOP_BRANCH }} git@gitlab.com:piri/luna-desktop-electron.git desktop && 
+          git clone --single-branch --branch ${{ secrets.LUNA_DESKTOP_BRANCH }} https://${{secrets.GITLAB_USER}}:${{secrets.GITLAB_PASS}}@@gitlab.com/piri/luna-desktop-electron.git desktop && 
           cd desktop && yalc add luna-middle-backend-ts
 
       - name: Install Dependencies
