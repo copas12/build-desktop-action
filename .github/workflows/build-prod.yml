@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-prod:
-    runs-on: macos-10.15
+    runs-on: ubuntu-latest
     env:
       APP_ENV: prod
       TAG: LDP
@@ -29,11 +29,19 @@ jobs:
       - name: Install Yalc
         run: sudo npm i -g yalc electron-builder@22.2.0
 
-      - name: Install Wine
+      # - name: Install Wine Macos
+      #   run: >
+      #     brew install --cask xquartz &&
+      #     brew tap homebrew/cask-versions &&
+      #     brew install --cask --no-quarantine wine-staging
+
+      - name: Install Wine Ubuntu
         run: >
-          brew install --cask xquartz &&
-          brew tap homebrew/cask-versions &&
-          brew install --cask --no-quarantine wine-staging
+          sudo dpkg --add-architecture i386 &&
+          wget -qO - https://dl.winehq.org/wine-builds/winehq.key | sudo apt-key add - &&
+          sudo add-apt-repository ppa:cybermax-dexter/sdl2-backport &&
+          sudo apt-add-repository "deb https://dl.winehq.org/wine-builds/ubuntu $(lsb_release -cs) main" &&
+          sudo apt install --install-recommends winehq-stable
 
       - name: Clone and Build Middle Backend
         run: >
