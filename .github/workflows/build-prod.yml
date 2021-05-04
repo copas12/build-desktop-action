@@ -27,7 +27,7 @@ jobs:
           private-key-name: gitlab
 
       - name: Install Yalc
-        run: sudo npm i -g yalc
+        run: sudo npm i -g yalc electron-builder
 
       - name: Install Wine
         run: >
@@ -59,7 +59,7 @@ jobs:
       - name: Build Electron
         run: >
           cd desktop &&
-          npx cross-env NODE_ENV=production USE_SYSTEM_WINE=true DEBUG=electron-builder electron-builder -w
+          yarn build-win
 
       - name: Get Time
         id: time
