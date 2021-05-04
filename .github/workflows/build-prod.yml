@@ -27,7 +27,7 @@ jobs:
           private-key-name: gitlab
 
       - name: Install Yalc
-        run: sudo npm i -g yalc electron-builder
+        run: sudo npm i -g yalc electron-builder@22.2.0
 
       - name: Install Wine
         run: >
