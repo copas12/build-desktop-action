@@ -1,0 +1,80 @@
+name: Build Luna Desktop Dev
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-prod:
+    runs-on: windows-latest
+    env:
+      APP_ENV: dev
+      TAG: LDD
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '12.22.1'
+
+      - name: Install Yalc
+        run: npm i -g yalc electron-builder@22.2.0
+
+      - name: Clone and Build Middle Backend
+        run: >
+          git clone --single-branch --branch ${{ secrets.MIDDLE_BACKEND_BRANCH }} https://${{secrets.GITLAB_USER}}:${{secrets.GITLAB_PASS}}@gitlab.com/piri/luna-middle-backend-api.git && 
+          cd luna-middle-backend-api && yarn && yarn build-electron-${{env.APP_ENV}} &&
+          cd build && yalc publish --private
+
+      - name: Clone Luna Desktop
+        run: >
+          git clone --single-branch --branch ${{ secrets.LUNA_DESKTOP_BRANCH }} https://${{secrets.GITLAB_USER}}:${{secrets.GITLAB_PASS}}@gitlab.com/piri/luna-desktop-electron.git desktop && 
+          cd desktop && yalc add luna-middle-backend-ts
+
+      - name: Install Dependencies
+        run: >
+          cd desktop &&
+          node -v &&
+          npm install
+
+      - name: Build React
+        run: >
+          cd desktop &&
+          npm run build-react
+
+      - name: Build Electron
+        run: >
+          cd desktop &&
+          npx cross-env NODE_ENV=production electron-builder -w
+
+      - name: Get Time
+        id: time
+        uses: nanzm/get-time-action@v1.1
+        with:
+          timeZone: 7
+          format: "YYYY-MM-DD_HH.mm"
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+        with:
+          tag_name: ${{env.TAG}}_${{ steps.time.outputs.time }}
+          release_name: "[${{ steps.time.outputs.time }}] ${{env.APP_ENV}}"
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload_release_asset
+        uses: actions/upload-release-asset@v1
+        env:
+         GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: desktop/dist/LunaDesktopSetup.exe
+          asset_name: luna-desktop-${{env.APP_ENV}}_[${{ steps.time.outputs.time }}].exe
+          asset_content_type: application/vnd.microsoft.portable-executable
+
