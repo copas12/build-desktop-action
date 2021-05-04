@@ -20,7 +20,7 @@ jobs:
           node-version: '12.22.1'
 
       - name: test
-        run: echo %userprofile%
+        run: pwd
 
       # - name: Setup GitLab SSH
       #   uses: MrSquaare/ssh-setup-action@v1
