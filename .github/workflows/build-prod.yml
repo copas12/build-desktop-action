@@ -68,7 +68,7 @@ jobs:
       - name: Build Electron
         run: >
           cd desktop &&
-          npm run build-win
+          npx cross-env NODE_ENV=production electron-builder -w
 
       - name: Get Time
         id: time
