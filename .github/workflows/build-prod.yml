@@ -8,9 +8,8 @@ on:
 
 jobs:
   build-prod:
-    runs-on: ubuntu-latest
+    runs-on: macos-10.15
     env:
-      APP_PATH: luna-mobile/apps/luna-phone
       APP_ENV: prod
       TAG: LDP
     steps:
@@ -32,11 +31,9 @@ jobs:
 
       - name: Install Wine
         run: >
-          sudo dpkg --add-architecture i386 &&
-          wget -qO - https://dl.winehq.org/wine-builds/winehq.key | sudo apt-key add - &&
-          sudo add-apt-repository ppa:cybermax-dexter/sdl2-backport &&
-          sudo apt-add-repository "deb https://dl.winehq.org/wine-builds/ubuntu $(lsb_release -cs) main" &&
-          sudo apt install --install-recommends winehq-stable
+          brew install --cask xquartz &&
+          brew tap homebrew/cask-versions &&
+          brew install --cask --no-quarantine wine-staging
 
       - name: Clone and Build Middle Backend
         run: >
