@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-prod:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     env:
       APP_ENV: prod
       TAG: LDP
@@ -19,12 +19,15 @@ jobs:
         with:
           node-version: '12.22.1'
 
-      - name: Setup GitLab SSH
-        uses: MrSquaare/ssh-setup-action@v1
-        with:
-          host: gitlab.com
-          private-key: ${{ secrets.SSH_PRIVATE_KEY_GITLAB }}
-          private-key-name: gitlab
+      - name: test
+        run: echo %cd%
+        
+      # - name: Setup GitLab SSH
+      #   uses: MrSquaare/ssh-setup-action@v1
+      #   with:
+      #     host: gitlab.com
+      #     private-key: ${{ secrets.SSH_PRIVATE_KEY_GITLAB }}
+      #     private-key-name: gitlab
 
       - name: Install Yalc
         run: sudo npm i -g yalc electron-builder@22.2.0
@@ -58,7 +61,6 @@ jobs:
         run: >
           cd desktop &&
           node -v &&
-          rm package-lock.json &&
           yarn
 
       - name: Build React
