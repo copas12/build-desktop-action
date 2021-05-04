@@ -57,6 +57,7 @@ jobs:
       - name: Install Dependencies
         run: >
           cd desktop &&
+          rm package-lock.json &&
           yarn
 
       - name: Build React
