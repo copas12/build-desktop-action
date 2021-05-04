@@ -59,7 +59,7 @@ jobs:
       - name: Build Electron
         run: >
           cd desktop &&
-          yarn build-win
+          npx cross-env NODE_ENV=production USE_SYSTEM_WINE=true DEBUG=electron-builder electron-builder -w
 
       - name: Get Time
         id: time
