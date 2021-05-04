@@ -57,6 +57,7 @@ jobs:
       - name: Install Dependencies
         run: >
           cd desktop &&
+          node -v &&
           rm package-lock.json &&
           yarn
 
