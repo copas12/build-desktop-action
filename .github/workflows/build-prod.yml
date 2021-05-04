@@ -9,5 +9,28 @@ on:
 jobs:
   build-prod:
     runs-on: macos-latest
+    env:
+     APP_PATH: luna-mobile/apps/luna-phone
+     APP_ENV: prod
+     TAG: LDP
     steps:
       - uses: actions/checkout@v2
+      
+      - name: Setup GitLab SSH
+        uses: MrSquaare/ssh-setup-action@v1
+        with:
+          host: gitlab.com
+          private-key: ${{ secrets.SSH_PRIVATE_KEY_GITLAB }}
+          private-key-name: gitlab
+          
+      - name: Install Yalc
+        run: sudo npm i -g yalc
+        
+      - name: Clone and Build Middle Backend
+        run: >
+          git clone --single-branch --branch ${{ secrets.MIDDLE_BACKEND_BRANCH }} git@gitlab.com:piri/luna-middle-backend-api.git && 
+          cd luna-middle-backend-api && yarn && yarn build-${{env.APP_ENV}} &&
+          cd build && yalc publish --private
+    
+    
+
