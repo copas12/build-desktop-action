@@ -25,6 +25,9 @@ jobs:
           
       - name: Install Yalc
         run: sudo npm i -g yalc
+
+      - name: Install Wine
+        run: brew cask install wine-stable
         
       - name: Clone and Build Middle Backend
         run: >
