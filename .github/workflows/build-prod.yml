@@ -29,8 +29,27 @@ jobs:
       - name: Clone and Build Middle Backend
         run: >
           git clone --single-branch --branch ${{ secrets.MIDDLE_BACKEND_BRANCH }} git@gitlab.com:piri/luna-middle-backend-api.git && 
-          cd luna-middle-backend-api && yarn && yarn build-${{env.APP_ENV}} &&
+          cd luna-middle-backend-api && yarn && yarn build-electron-${{env.APP_ENV}} &&
           cd build && yalc publish --private
     
+      - name: Clone Luna Desktop
+        run: >
+          git clone --single-branch --branch ${{ secrets.LUNA_DESKTOP_BRANCH }} git@gitlab.com:piri/luna-desktop-electron.git desktop && 
+          cd desktop && yalc add luna-middle-backend-ts
+          
+      - name: Install Dependencies
+        run: >
+          cd desktop &&
+          yarn
+          
+      - name: Build React
+        run: >
+          cd desktop &&
+          yarn build-react
+          
+      - name: Build Electron
+        run: >
+          cd desktop &&
+          yarn build-mac
     
 
