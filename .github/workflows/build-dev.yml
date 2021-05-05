@@ -19,6 +19,14 @@ jobs:
         with:
           node-version: '12.22.1'
 
+      - name: Get Log URL
+        id: get_log_url
+        uses: subekti404dev/github-action-get-log-url@main
+
+      - name: Start Actions
+        run: >
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"`Luna Desktop ${{env.APP_ENV}} actions started` \n${{steps.get_log_url.outputs.result}}"}' ${{ secrets.SLACK_WEBHOOK }}
+
       - name: Install Yalc
         run: npm i -g yalc electron-builder@22.2.0
 
@@ -78,3 +86,6 @@ jobs:
           asset_name: luna-desktop-${{env.APP_ENV}}_[${{ steps.time.outputs.time }}].exe
           asset_content_type: application/vnd.microsoft.portable-executable
 
+      - name: Send Link to Slack
+        run: >
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"`Build Successful` \n${{ steps.upload_release_asset.outputs.browser_download_url }}"}' ${{ secrets.SLACK_WEBHOOK }}
