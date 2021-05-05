@@ -7,7 +7,7 @@ const argv = yargs(hideBin(process.argv)).argv
 const axios = require('axios').default;
 const moment = require('moment');
 const user = 'copas12';
-const repo = 'build-luna-mobile-action';
+const repo = 'build-desktop-action';
 const file = 'data.json';
 const url = `https://api.github.com/repos/${user}/${repo}/contents/${file}`;
 
